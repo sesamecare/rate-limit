@@ -1,0 +1,69 @@
+{
+  "name": "@sesamecare-oss/rate-limit",
+  "version": "0.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "author": "Developers <developers@sesamecare.com>",
+  "license": "UNLICENSED",
+  "packageManager": "yarn@3.7.0",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "yarn dlx rimraf ./dist",
+    "lint": "eslint .",
+    "postinstall": "coconfig",
+    "test": "vitest"
+  },
+  "keywords": [
+    "typescript",
+    "sesame"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sesamecare/rate-limit.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/exec",
+        {
+          "publishCmd": "yarn dlx pinst --disable"
+        }
+      ],
+      "@semantic-release/npm",
+      "@semantic-release/github"
+    ]
+  },
+  "config": {
+    "coconfig": "@openapi-typescript-infra/coconfig"
+  },
+  "devDependencies": {
+    "@openapi-typescript-infra/coconfig": "^4.3.0",
+    "@openapi-typescript-infra/service-tester": "^4.0.3",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/github": "^9.2.6",
+    "@types/node": "^20.11.5",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "coconfig": "^1.4.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.1"
+  },
+  "dependencies": {
+    "@openapi-typescript-infra/service": "^4.12.1",
+    "ioredis": "^5.3.2",
+    "rate-limiter-flexible": "^4.0.0"
+  }
+}
