@@ -2,6 +2,8 @@ import { ServiceExpress } from '@openapi-typescript-infra/service';
 import type { RedisOptions, Redis } from 'ioredis';
 import { IRateLimiterOptions, RateLimiterRedis, RateLimiterMemory, RateLimiterAbstract, IRateLimiterRes } from 'rate-limiter-flexible';
 
+export type { IRateLimiterOptions } from 'rate-limiter-flexible';
+
 const FAIL: IRateLimiterRes = {
   remainingPoints: -1,
   consumedPoints: -1,
