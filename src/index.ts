@@ -1,4 +1,3 @@
-import { ServiceExpress } from '@openapi-typescript-infra/service';
 import type { RedisOptions, Redis } from 'ioredis';
 import { IRateLimiterOptions, RateLimiterRedis, RateLimiterMemory, RateLimiterAbstract, IRateLimiterRes } from 'rate-limiter-flexible';
 
@@ -21,13 +20,21 @@ interface LimitOutcome<I extends string> {
   causes?: I[];
 }
 
+interface RateLimiterHostService {
+  locals: {
+    logger: {
+      error: (error: Error, message: string) => void;
+    };
+  };
+}
+
 type Result<I extends string> = Record<I, IRateLimiterRes | null>;
 
 export class RateLimiters<I extends string> {
   instances: Record<I, RateLimiterAbstract>;
 
   constructor(
-    private app: ServiceExpress,
+    private app: RateLimiterHostService,
     client: RedisOptions | Redis | 'memory',
     instances: Record<I, IRateLimiterOptions>,
     private opts?: { failOnError?: boolean; },

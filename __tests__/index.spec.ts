@@ -1,14 +1,19 @@
 import { describe, expect, test } from 'vitest';
-import { getReusableApp } from '@openapi-typescript-infra/service-tester';
-import { useService } from '@openapi-typescript-infra/service';
 
 import { RateLimiters } from '../src/index';
+
+const fakeApp = {
+  locals: {
+    logger: {
+      error: console.error,
+    },
+  },
+};
 
 describe('Basic function', () => {
   test('should limit things', async () => {
     const key = `test-${Date.now()}`;
-    const app = await getReusableApp({ name: 'test', service: useService, rootDirectory: __dirname });
-    const rateLimiter = new RateLimiters(app, 'memory', {
+    const rateLimiter = new RateLimiters(fakeApp, 'memory', {
       default: {
         points: 10,
         duration: 1,
