@@ -4,6 +4,7 @@
   "description": "",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "type": "module",
   "author": "Developers <developers@sesamecare.com>",
   "license": "UNLICENSED",
   "packageManager": "yarn@3.7.0",
