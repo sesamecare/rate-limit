@@ -1,5 +1,10 @@
-import type { RedisOptions, Redis } from 'ioredis';
-import { IRateLimiterOptions, RateLimiterRedis, RateLimiterMemory, RateLimiterAbstract, IRateLimiterRes } from 'rate-limiter-flexible';
+import type { RedisClientType, RedisClientOptions } from 'redis';
+import type {
+  IRateLimiterOptions,
+  RateLimiterAbstract,
+  IRateLimiterRes,
+} from 'rate-limiter-flexible';
+import { RateLimiterRedis, RateLimiterMemory } from 'rate-limiter-flexible';
 
 export type { IRateLimiterOptions } from 'rate-limiter-flexible';
 
@@ -35,17 +40,18 @@ export class RateLimiters<I extends string> {
 
   constructor(
     private app: RateLimiterHostService,
-    client: RedisOptions | Redis | 'memory',
+    client: RedisClientOptions | RedisClientType | 'memory',
     instances: Record<I, IRateLimiterOptions>,
-    private opts?: { failOnError?: boolean; },
+    private opts?: { failOnError?: boolean },
   ) {
-    this.instances = {} as Record<I, RateLimiterAbstract>;
+    this.instances = {} as unknown as Record<I, RateLimiterAbstract>;
     for (const key in instances) {
       if (client === 'memory') {
         this.instances[key] = new RateLimiterMemory(instances[key]);
       } else {
         this.instances[key] = new RateLimiterRedis({
           storeClient: client,
+          useRedisPackage: true,
           ...instances[key],
         });
       }
@@ -61,15 +67,17 @@ export class RateLimiters<I extends string> {
       return PASS;
     };
 
-    const points = {} as Result<I>;
+    const points = {} as unknown as Result<I>;
     const promises: Promise<void>[] = [];
     for (const key in ids) {
-      promises.push(this.instances[key]
-        .get(ids[key])
-        .catch(catcher)
-        .then((result) => {
-          points[key] = result;
-        }));
+      promises.push(
+        this.instances[key]
+          .get(ids[key])
+          .catch(catcher)
+          .then((result) => {
+            points[key] = result;
+          }),
+      );
     }
     await Promise.all(promises);
     return points;
@@ -88,15 +96,20 @@ export class RateLimiters<I extends string> {
       return error;
     };
 
-    const results: Record<I, IRateLimiterRes | null> = {} as Record<I, IRateLimiterRes | null>;
+    const results: Record<I, IRateLimiterRes | null> = {} as unknown as Record<
+      I,
+      IRateLimiterRes | null
+    >;
     const promises: Promise<void>[] = [];
     for (const key in ids) {
-      promises.push(this.instances[key]
-        .consume(ids[key], points)
-        .catch(catcher)
-        .then((result) => {
-          results[key] = result;
-        }));
+      promises.push(
+        this.instances[key]
+          .consume(ids[key], points)
+          .catch(catcher)
+          .then((result) => {
+            results[key] = result;
+          }),
+      );
     }
     await Promise.all(promises);
     if (errors) {

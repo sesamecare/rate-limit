@@ -5,6 +5,7 @@ import { RateLimiters } from '../src/index';
 const fakeApp = {
   locals: {
     logger: {
+      // eslint-disable-next-line no-console
       error: console.error,
     },
   },
