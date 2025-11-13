@@ -10,23 +10,19 @@ on:
 permissions:
   contents: read
 
-jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cleanup stale actions
-        uses: styfle/cancel-workflow-action@0.11.0
-        with:
-          access_token: ${{ github.token }}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js 18
-      uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22
+      uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 22
         cache: yarn
     - name: npm install, lint, build, and test
       run: |
@@ -47,10 +43,10 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: yarn
       - run: yarn install --immutable
       - run: yarn build
